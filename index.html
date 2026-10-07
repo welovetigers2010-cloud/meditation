@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>冥想室 · 二十个可以进去的房间</title>
+<style>
+  :root{
+    --bg:#0D0F14;
+    --ink:#E9E7E1;
+    --sub:#8B8D96;
+    --line:#23262E;
+    --glow:#C9BFAE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:Georgia,'Times New Roman','Noto Serif SC','Songti SC','STSong','SimSun',serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- 首页 ---------- */
+  header{padding:64px 0 36px;text-align:center;}
+  .kicker{font-size:11px;letter-spacing:.3em;color:var(--sub);text-transform:uppercase;margin-bottom:18px;}
+  h1{font-size:38px;font-weight:900;letter-spacing:.06em;margin-bottom:8px;}
+  .en{font-style:italic;font-size:17px;color:var(--glow);margin-bottom:20px;}
+  .sub{font-size:13.5px;color:var(--sub);max-width:30em;margin:0 auto;}
+  .rule{border:none;border-top:1px solid var(--line);margin:34px auto 0;max-width:880px;}
+
+  .tallybar{
+    display:flex;justify-content:center;gap:28px;padding:20px 0;
+    font-size:12.5px;color:var(--sub);letter-spacing:.08em;flex-wrap:wrap;
+  }
+  .tallybar b{color:var(--glow);font-weight:normal;font-style:italic;font-size:17px;margin-right:2px;}
+
+  /* ---------- 画廊 ---------- */
+  .grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    padding-bottom:8px;
+  }
+  @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);gap:16px;}}
+  .room{
+    position:relative;border-radius:14px;overflow:hidden;cursor:pointer;
+    aspect-ratio:3/4;background:var(--line);
+  }
+  .room img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .5s ease,filter .5s ease;filter:brightness(.92) saturate(.95);
+  }
+  .room:active img{transform:scale(1.05);}
+  @media(hover:hover){.room:hover img{transform:scale(1.05);filter:brightness(1) saturate(1);}}
+  .room .shade{
+    position:absolute;inset:0;
+    background:linear-gradient(to top,rgba(13,15,20,.82) 0%,rgba(13,15,20,.12) 45%,transparent 65%);
+  }
+  .room .nm{
+    position:absolute;left:14px;bottom:12px;right:14px;
+  }
+  .room .nm b{display:block;font-size:17px;font-weight:900;letter-spacing:.05em;}
+  .room .nm i{font-style:italic;font-size:11px;color:rgba(233,231,225,.72);letter-spacing:.06em;}
+
+  footer{padding:36px 0 60px;text-align:center;}
+  .note{font-size:11.5px;color:var(--sub);line-height:1.9;max-width:30em;margin:0 auto;letter-spacing:.04em;}
+  .brand{margin-top:18px;font-size:11px;letter-spacing:.28em;color:var(--sub);}
+  .brand i{font-style:italic;letter-spacing:.1em;}
+
+  /* ---------- 房间（详情） ---------- */
+  #room{
+    position:fixed;inset:0;z-index:50;background:var(--bg);
+    display:flex;flex-direction:column;
+    opacity:0;pointer-events:none;transition:opacity .6s ease;
+  }
+  #room.show{opacity:1;pointer-events:auto;}
+  #room .bg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:brightness(.6) saturate(.9);transform:scale(1.04);
+    animation:breatheBg 14s ease-in-out infinite;
+  }
+  @keyframes breatheBg{0%,100%{transform:scale(1.04);}45%{transform:scale(1.11);}}
+  #room .veil{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 60%,transparent 30%,rgba(13,15,20,.55) 100%);
+  }
+  .top{
+    position:relative;display:flex;justify-content:space-between;align-items:center;
+    padding:20px 22px;
+  }
+  #backBtn{
+    font-family:inherit;background:rgba(13,15,20,.4);border:1px solid rgba(233,231,225,.35);
+    color:var(--ink);font-size:13px;letter-spacing:.15em;padding:8px 18px;border-radius:999px;
+    cursor:pointer;backdrop-filter:blur(6px);
+  }
+  #roomName{font-size:14px;letter-spacing:.25em;color:rgba(233,231,225,.85);text-shadow:0 1px 8px rgba(0,0,0,.5);}
+
+  .breathZone{
+    position:relative;flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:44px;padding-bottom:10px;
+  }
+  .ringWrap{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center;}
+  .ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:1.5px solid rgba(233,231,225,.55);
+    background:radial-gradient(circle,rgba(233,231,225,.10),rgba(233,231,225,.02) 70%);
+    transform:scale(.82);transition:transform 4s cubic-bezier(.45,.05,.35,1);
+    box-shadow:0 0 40px rgba(233,231,225,.10);
+  }
+  .ringCore{
+    width:8px;height:8px;border-radius:50%;background:var(--ink);opacity:.8;
+    box-shadow:0 0 14px rgba(233,231,225,.8);
+  }
+  #phase{
+    font-size:16px;letter-spacing:.35em;color:var(--ink);text-shadow:0 1px 10px rgba(0,0,0,.6);
+    padding-left:.35em;
+  }
+  .bottom{
+    position:relative;padding:0 22px calc(26px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .snds{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .snd{
+    font-family:inherit;font-size:12px;letter-spacing:.14em;
+    padding:7px 18px;border-radius:999px;cursor:pointer;
+    border:1px solid rgba(233,231,225,.4);background:rgba(13,15,20,.35);
+    color:var(--ink);backdrop-filter:blur(6px);transition:all .2s;
+  }
+  .snd.on{background:rgba(233,231,225,.9);color:#0D0F14;border-color:transparent;}
+  #timer{font-size:12px;letter-spacing:.18em;color:rgba(233,231,225,.75);}
+  .tiny{font-size:10.5px;color:rgba(233,231,225,.5);letter-spacing:.06em;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">No.03 — Meditation Rooms</div>
+    <h1>冥想室</h1>
+    <div class="en">Twenty rooms, always open.</div>
+    <p class="sub">二十个房间，灯一直亮着。心情重的时候进来坐一会儿——不用会冥想，呼吸就够了。</p>
+    <hr class="rule">
+  </header>
+
+  <div class="tallybar">
+    <span><b id="totalMin">0</b>分钟 · 你的累计安静</span>
+    <span><b id="totalCnt">0</b>次 · 你推开过房门</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <p class="note">冥想与呼吸练习是放松方式，不能替代医疗；如果持续焦虑、失眠或情绪低落，请考虑寻求专业帮助。</p>
+    <div class="brand">冥想室 <i>· MEDITATION ROOMS ·</i></div>
+  </footer>
+</div>
+
+<div id="room">
+  <img class="bg" id="roomBg" alt="">
+  <div class="veil"></div>
+  <div class="top">
+    <button id="backBtn">← 回廊</button>
+    <div id="roomName"></div>
+    <div style="width:64px;"></div>
+  </div>
+  <div class="breathZone">
+    <div class="ringWrap">
+      <div class="ring" id="ring"></div>
+      <div class="ringCore"></div>
+    </div>
+    <div id="phase">准备</div>
+  </div>
+  <div class="bottom">
+    <div class="snds">
+      <button class="snd on" data-snd="none">无声</button>
+      <button class="snd" data-snd="rain">雨</button>
+      <button class="snd" data-snd="wave">浪</button>
+      <button class="snd" data-snd="wind">风</button>
+    </div>
+    <div id="timer">本次 0 分 00 秒</div>
+    <div class="tiny">跟着圆环就好：膨胀时吸气，停住时屏息，收缩时呼气。</div>
+  </div>
+</div>
+
+<script>
+const ROOMS=[
+ ["cloudsea","云海之上","Above the Clouds"],
+ ["starry","星空夜帐","Under the Stars"],
+ ["moonsea","月光海面","Moonlit Ocean"],
+ ["sakura","樱花庭院","Sakura Garden"],
+ ["bamboo","竹林小径","Bamboo Path"],
+ ["hotspring","温泉雾谷","Hot Spring Mist"],
+ ["aurora","极光雪原","Aurora Field"],
+ ["underwater","水下光斑","Underwater Light"],
+ ["dunes","落日沙丘","Golden Dunes"],
+ ["forest","森林晨雾","Forest Dawn"],
+ ["firefly","萤火夏夜","Firefly Night"],
+ ["snowspring","雪落温泉","Snow & Steam"],
+ ["zen","无垠沙盘","Zen Garden"],
+ ["lantern","灯笼水巷","Lantern Canal"],
+ ["greenhouse","玻璃花房","The Greenhouse"],
+ ["cloudtrain","云端列车","Cloud Train"],
+ ["desertstars","沙漠星空","Desert Milky Way"],
+ ["rainwindow","雨夜窗边","Rainy Window"],
+ ["peak","群山之巅","The Lone Peak"],
+ ["cave","烛光洞窟","Candlelit Cave"]
+];
+const KEY="meditation_stats";
+let stats={min:0,cnt:0};
+try{stats=JSON.parse(localStorage.getItem(KEY))||{min:0,cnt:0};}catch(e){stats={min:0,cnt:0};}
+
+const gridEl=document.getElementById("grid");
+ROOMS.forEach(([id,nm,en],i)=>{
+  const d=document.createElement("div");
+  d.className="room";
+  d.innerHTML='<img loading="lazy" src="assets/'+id+'.png" alt="'+nm+'">'+
+    '<div class="shade"></div>'+
+    '<div class="nm"><b>'+nm+'</b><i>'+(i+1<10?"0":"")+(i+1)+' · '+en+'</i></div>';
+  d.onclick=()=>openRoom(i);
+  gridEl.appendChild(d);
+});
+document.getElementById("totalMin").textContent=stats.min;
+document.getElementById("totalCnt").textContent=stats.cnt;
+
+/* ---------- 房间 ---------- */
+let phaseTimer=null,secTimer=null,sec=0;
+const roomEl=document.getElementById("room");
+const ringEl=document.getElementById("ring");
+const phaseEl=document.getElementById("phase");
+
+function openRoom(i){
+  const [id,nm,en]=ROOMS[i];
+  document.getElementById("roomBg").src="assets/"+id+".png";
+  document.getElementById("roomName").textContent=nm+" · "+en;
+  sec=0;
+  stats.cnt++;saveStats();
+  roomEl.classList.add("show");
+  document.body.style.overflow="hidden";
+  startBreath();startTimer();
+}
+function closeRoom(){
+  roomEl.classList.remove("show");
+  document.body.style.overflow="";
+  clearInterval(phaseTimer);clearInterval(secTimer);
+  stopSound();
+  setSnd("none");
+}
+document.getElementById("backBtn").onclick=closeRoom;
+
+function startBreath(){
+  clearInterval(phaseTimer);
+  const steps=[["吸气",4,1.22],["轻轻屏住",2,1.22],["呼气",6,.82]];
+  let k=0;
+  const run=()=>{
+    const [txt,dur,scale]=steps[k];
+    phaseEl.textContent=txt;
+    ringEl.style.transition="transform "+dur+"s cubic-bezier(.45,.05,.35,1)";
+    ringEl.style.transform="scale("+scale+")";
+    k=(k+1)%steps.length;
+    phaseTimer=setTimeout(run,dur*1000);
+  };
+  run();
+}
+function startTimer(){
+  clearInterval(secTimer);
+  document.getElementById("timer").textContent="本次 0 分 00 秒";
+  secTimer=setInterval(()=>{
+    sec++;
+    const m=Math.floor(sec/60),s=sec%60;
+    document.getElementById("timer").textContent="本次 "+m+" 分 "+String(s).padStart(2,"0")+" 秒";
+  },1000);
+}
+function saveStats(){
+  localStorage.setItem(KEY,JSON.stringify(stats));
+  document.getElementById("totalMin").textContent=stats.min;
+  document.getElementById("totalCnt").textContent=stats.cnt;
+}
+
+/* ---------- 环境音（WebAudio 程序化） ---------- */
+let AC=null,nodes=null,curSnd="none";
+function ensureAC(){
+  if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==="suspended")AC.resume();
+}
+function noiseBuffer(type){
+  const len=AC.sampleRate*3;
+  const buf=AC.createBuffer(1,len,AC.sampleRate);
+  const d=buf.getChannelData(0);
+  if(type==="white"){for(let i=0;i<len;i++)d[i]=Math.random()*2-1;}
+  else if(type==="brown"){let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+0.02*w)/1.02;d[i]=last*3.5;}}
+  else{let b0=0,b1=0,b2=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;b0=0.997*b0+0.029*w;b1=0.985*b1+0.032*w;b2=0.95*b2+0.048*w;d[i]=(b0+b1+b2)*0.5;}}
+  return buf;
+}
+function playSnd(kind){
+  stopSound();
+  if(kind==="none")return;
+  ensureAC();
+  const src=AC.createBufferSource();
+  src.buffer=noiseBuffer(kind==="rain"?"white":kind==="wave"?"brown":"pink");
+  src.loop=true;
+  const filt=AC.createBiquadFilter(),gain=AC.createGain();
+  let lfo=null,lfoGain=null;
+  if(kind==="rain"){filt.type="lowpass";filt.frequency.value=1400;gain.gain.value=.13;}
+  if(kind==="wave"){
+    filt.type="lowpass";filt.frequency.value=520;gain.gain.value=.16;
+    lfo=AC.createOscillator();lfo.frequency.value=.09;
+    lfoGain=AC.createGain();lfoGain.gain.value=.11;
+    lfo.connect(lfoGain);lfoGain.connect(gain.gain);lfo.start();
+  }
+  if(kind==="wind"){
+    filt.type="bandpass";filt.frequency.value=420;filt.Q.value=.6;gain.gain.value=.2;
+    lfo=AC.createOscillator();lfo.frequency.value=.05;
+    lfoGain=AC.createGain();lfoGain.gain.value=.14;
+    lfo.connect(lfoGain);lfoGain.connect(gain.gain);lfo.start();
+  }
+  src.connect(filt);filt.connect(gain);gain.connect(AC.destination);
+  src.start();
+  nodes={src,gain,lfo};
+}
+function stopSound(){
+  if(!nodes)return;
+  try{nodes.src.stop();if(nodes.lfo)nodes.lfo.stop();}catch(e){}
+  nodes=null;
+}
+function setSnd(kind){
+  curSnd=kind;
+  document.querySelectorAll(".snd").forEach(b=>b.classList.toggle("on",b.dataset.snd===kind));
+}
+document.querySelectorAll(".snd").forEach(b=>{
+  b.onclick=()=>{setSnd(b.dataset.snd);playSnd(b.dataset.snd);};
+});
+
+/* 关房时把本次分钟数累加进总账 */
+document.getElementById("backBtn").onclick=function(){
+  stats.min+=Math.round(sec/60);
+  saveStats();
+  closeRoom();
+};
+</script>
+</body>
+</html>
